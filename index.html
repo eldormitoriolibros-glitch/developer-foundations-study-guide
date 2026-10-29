@@ -49,76 +49,106 @@ body{
   padding-right:max(16px, env(safe-area-inset-right, 0px));
   padding-block:0;
 }
-a{color:var(--accent)}
-a:focus-visible, button:focus-visible, input:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
-.shell{max-width:1180px; margin:0 auto; display:grid; grid-template-columns:240px minmax(0,1fr); gap:48px; padding-block:40px 80px}
-@media (max-width: 900px){ .shell{grid-template-columns:minmax(0,1fr); gap:24px; padding-block:24px 64px} }
+/* browser surfaces */
+::selection{background:var(--accent-soft); color:var(--ink)}
+html{scrollbar-color:var(--line) transparent; caret-color:var(--accent); -webkit-text-size-adjust:100%}
+input[type="checkbox"]{accent-color:var(--good)}
+a{color:var(--accent); text-underline-offset:.2em; text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:2px}
+a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:4px}
+.shell{max-width:1200px; margin:0 auto; display:grid; grid-template-columns:248px minmax(0,1fr); gap:56px; padding-block:48px 96px}
+@media (max-width: 900px){ .shell{grid-template-columns:minmax(0,1fr); gap:20px; padding-block:0 64px} }
 
-/* rail */
-.rail{position:sticky; top:calc(env(safe-area-inset-top, 0px) + 24px); align-self:start; display:flex; flex-direction:column; gap:20px}
-@media (max-width: 900px){ .rail{position:static} }
-.rail-title{font-family:var(--font-mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
-.rail nav ol{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px}
-@media (max-width: 900px){ .rail nav ol{flex-direction:row; flex-wrap:wrap; gap:6px} }
-.rail nav a{display:flex; align-items:center; gap:10px; padding:6px 10px; border-radius:6px; text-decoration:none; color:var(--ink); font-size:14px; line-height:1.35}
-@media (max-width: 900px){ .rail nav a{border:1px solid var(--line); background:var(--surface)} }
-.rail nav a:hover{background:var(--accent-soft)}
-.rail .code{font-family:var(--font-mono); font-size:12px; color:var(--muted); min-width:22px}
-.rail .dot{width:8px; height:8px; border-radius:50%; border:1.5px solid var(--line); margin-left:auto; flex:none}
+/* rail: sticky contents on desktop, a compact sticky bar on phones */
+.rail{position:sticky; top:calc(env(safe-area-inset-top, 0px) + 32px); align-self:start; max-height:calc(100vh - 64px); overflow-y:auto; scrollbar-width:thin}
+.toc{display:flex; flex-direction:column; gap:18px}
+.toc > summary{display:none}
+.toc nav{display:flex; flex-direction:column; gap:4px}
+.toc-group{font-size:12px; font-weight:600; color:var(--muted); letter-spacing:.02em; padding:14px 10px 4px}
+.toc-group:first-child{padding-top:0}
+.rail nav ol{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:1px}
+.rail nav a{display:grid; grid-template-columns:24px minmax(0,1fr) auto; align-items:center; gap:6px; padding:6px 10px; border-radius:6px; text-decoration:none; color:var(--muted); font-size:14px; line-height:1.35; transition:background-color .15s, color .15s}
+.rail nav a:hover{background:var(--accent-soft); color:var(--ink)}
+.rail nav a[aria-current="true"]{background:var(--accent-soft); color:var(--ink); font-weight:600}
+.rail nav a[aria-current="true"] .code{color:var(--accent)}
+.rail .code{font-size:12px; font-weight:500; color:var(--muted); font-variant-numeric:tabular-nums}
+.rail .dot{width:8px; height:8px; border-radius:50%; border:1.5px solid var(--line); flex:none}
 .rail a.done .dot{background:var(--good); border-color:var(--good)}
-.progress{font-size:13px; color:var(--muted)}
+.progress{font-size:13px; color:var(--muted); padding:0 10px; margin-top:20px}
 .progress strong{color:var(--ink); font-variant-numeric:tabular-nums}
-.bar{height:6px; background:var(--line); border-radius:3px; overflow:hidden; margin-top:6px}
+.bar{height:6px; background:var(--line); border-radius:3px; overflow:hidden; margin-top:8px}
 .bar span{display:block; height:100%; width:0; background:var(--good); transition:width .3s}
+@media (max-width: 900px){
+  body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top, 0px); z-index:30; background:var(--bg)}
+  .rail{top:env(safe-area-inset-top, 0px); z-index:20; max-height:none; overflow:visible; background:var(--bg); margin-inline:calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding-inline:max(16px, env(safe-area-inset-left, 0px)); border-bottom:1px solid var(--line)}
+  .toc{gap:0}
+  .toc > summary{display:flex; align-items:center; gap:10px; padding:12px 0; cursor:pointer; list-style:none; font-size:14px}
+  .toc > summary::-webkit-details-marker{display:none}
+  .toc-label{font-weight:600}
+  .toc-current{color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; flex:1}
+  .chev{width:16px; height:16px; flex:none; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; transition:transform .2s}
+  .toc[open] .chev{transform:rotate(180deg)}
+  .toc[open] nav{max-height:min(64vh, 560px); overflow-y:auto; padding-bottom:12px}
+  .toc[open] .progress{padding:0 0 14px}
+}
 
 /* main */
-main{min-width:0; display:flex; flex-direction:column; gap:56px}
+main{min-width:0; display:flex; flex-direction:column; gap:72px}
 main > section{scroll-margin-top:24px; display:flex; flex-direction:column; gap:18px; min-width:0}
+@media (max-width: 900px){ main > section{scroll-margin-top:64px} main{gap:56px} }
 main > section > *, figure, .diagram, .tablewrap{min-width:0; max-width:100%}
 .prose{max-width:70ch}
-h1,h2,h3,h4{font-family:var(--font-display); text-wrap:balance; margin:0; line-height:1.2; font-weight:600}
-h1{font-size:clamp(2rem, 4.5vw, 2.9rem); letter-spacing:-.01em}
-h2{font-size:1.75rem}
-h3{font-size:1.25rem; margin-top:10px}
+h1,h2,h3,h4{font-family:var(--font-display); text-wrap:balance; margin:0; line-height:1.18; font-weight:600}
+h1{font-size:clamp(2.2rem, 5vw, 3.4rem); letter-spacing:-.02em; line-height:1.06; max-width:16ch}
+h2{font-size:clamp(1.6rem, 3vw, 2.1rem); letter-spacing:-.01em}
+main > section > h2{padding-bottom:12px; border-bottom:1px solid var(--line)}
+h3{font-size:1.3rem; margin-top:18px}
 h4{font-size:1.05rem; font-family:var(--font-body); font-weight:600}
 p{margin:0}
 ul,ol{margin:0; padding-left:1.25rem; display:flex; flex-direction:column; gap:6px}
-.eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent)}
-.lede{font-size:1.15rem; color:var(--muted); max-width:62ch}
+.lede{font-size:1.2rem; line-height:1.55; color:var(--muted); max-width:58ch}
 .meta{display:flex; flex-wrap:wrap; gap:8px 20px; font-size:14px; color:var(--muted)}
 .meta b{color:var(--ink); font-variant-numeric:tabular-nums}
-.note{font-size:14px; color:var(--muted); border-left:3px solid var(--line); padding:4px 0 4px 14px; max-width:70ch}
-code, .mono{font-family:var(--font-mono); font-size:.88em; background:var(--code-bg); padding:1px 5px; border-radius:4px; overflow-wrap:anywhere}
+.actions{display:flex; flex-wrap:wrap; gap:10px; margin-block:6px 4px}
+.btn-ghost{font:inherit; font-size:14px; font-weight:500; display:inline-flex; align-items:center; padding:8px 14px; border-radius:6px; border:1px solid var(--line); background:var(--surface); color:var(--ink); text-decoration:none; cursor:pointer; transition:border-color .15s, background-color .15s}
+.btn-ghost:hover{border-color:var(--accent); background:var(--accent-soft)}
+.src{font-size:14px; color:var(--muted); margin-top:-6px}
+.note{font-size:14px; color:var(--muted); background:var(--code-bg); border-radius:8px; padding:10px 14px; max-width:70ch}
+code, .mono{font-family:var(--font-mono); font-size:.88em; background:var(--code-bg); padding:1px 5px; border-radius:4px; overflow-wrap:break-word}
+td code{white-space:nowrap}
 pre{margin:0; background:var(--code-bg); border-radius:8px; padding:14px 16px; overflow-x:auto; font-family:var(--font-mono); font-size:13px; line-height:1.55}
 pre code{background:none; padding:0; font-size:inherit; overflow-wrap:normal}
 
-.mod-head{display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:10px 24px; border-bottom:1px solid var(--line); padding-bottom:14px}
-.mod-head .kicker{font-family:var(--font-mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
-.mod-head h2{margin-top:4px}
-.rev{display:inline-flex; align-items:center; gap:8px; font-size:14px; color:var(--muted); cursor:pointer; user-select:none}
-.rev input{width:16px; height:16px; accent-color:var(--good)}
+.mod-head{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:10px 24px; border-bottom:1px solid var(--line); padding-bottom:14px}
+.mod-head > div{display:flex; flex-direction:column; gap:6px; min-width:0}
+.mod-meta{font-size:14px; color:var(--muted)}
+.rev{display:inline-flex; align-items:center; gap:8px; font-size:14px; color:var(--muted); cursor:pointer; user-select:none; padding:6px 10px; border:1px solid var(--line); border-radius:999px; background:var(--surface); transition:border-color .15s, color .15s}
+.rev:hover{border-color:var(--good); color:var(--ink)}
+.rev:has(input:checked){border-color:var(--good); color:var(--good)}
+.rev input{width:16px; height:16px; margin:0; accent-color:var(--good)}
 
 .tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:8px; background:var(--surface)}
-table{border-collapse:collapse; width:100%; font-size:14px; line-height:1.45}
-th,td{text-align:left; vertical-align:top; padding:9px 12px; border-bottom:1px solid var(--line)}
-th{font-weight:600; background:var(--accent-soft); white-space:nowrap}
+table{border-collapse:collapse; width:100%; font-size:14px; line-height:1.5}
+th,td{text-align:left; vertical-align:top; padding:10px 14px; border-bottom:1px solid var(--line)}
+th{font-weight:600; font-size:13px; color:var(--muted); background:var(--code-bg); white-space:nowrap}
 tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:color-mix(in srgb, var(--accent-soft) 45%, transparent)}
 td:first-child{font-weight:500}
 .num{font-variant-numeric:tabular-nums; white-space:nowrap}
 
 .trap{background:var(--trap-soft); border-radius:8px; padding:14px 16px; display:flex; flex-direction:column; gap:6px; max-width:76ch}
-.trap .label{font-family:var(--font-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--trap); font-weight:500}
+.trap .label{font-size:12px; font-weight:600; letter-spacing:.02em; color:var(--trap)}
 .rule{background:var(--accent-soft); border-radius:8px; padding:14px 16px; max-width:76ch; display:flex; flex-direction:column; gap:6px}
-.rule .label{font-family:var(--font-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); font-weight:500}
+.rule .label{font-size:12px; font-weight:600; letter-spacing:.02em; color:var(--accent)}
 
 .cheat{display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:14px}
 .cheat > div{background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:14px 16px; display:flex; flex-direction:column; gap:8px; min-width:0}
 .cheat h4{font-size:15px}
 .cheat ul{font-size:14px; gap:4px}
 
-.themes{counter-reset:t; list-style:none; padding:0; display:flex; flex-direction:column; gap:12px; max-width:76ch}
-.themes li{counter-increment:t; display:grid; grid-template-columns:34px minmax(0,1fr); gap:10px}
-.themes li::before{content:counter(t); font-family:var(--font-display); font-weight:600; font-size:1.4rem; color:var(--accent); line-height:1.2}
+.themes{list-style:none; padding:0; display:flex; flex-direction:column; gap:14px; max-width:72ch}
+.themes li{padding-left:16px; position:relative}
+.themes li::before{content:""; position:absolute; left:0; top:.62em; width:6px; height:6px; border-radius:50%; background:var(--accent)}
 
 /* quiz */
 .quiz{display:flex; flex-direction:column; gap:14px}
@@ -127,13 +157,13 @@ td:first-child{font-weight:500}
 .score{font-size:14px; color:var(--muted); font-variant-numeric:tabular-nums}
 .btn-reset{font:inherit; font-size:13px; background:none; border:1px solid var(--line); color:var(--muted); border-radius:6px; padding:4px 10px; cursor:pointer}
 .btn-reset:hover{color:var(--ink); border-color:var(--muted)}
-.q{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:16px; display:flex; flex-direction:column; gap:10px; min-width:0}
-.q .stem{font-weight:500}
-.q .stem .n{font-family:var(--font-mono); font-size:12px; color:var(--muted); margin-right:6px}
-.opts{display:flex; flex-direction:column; gap:6px}
-.opt{font:inherit; font-size:15px; text-align:left; display:grid; grid-template-columns:26px minmax(0,1fr); gap:8px; align-items:start; width:100%; background:transparent; color:var(--ink); border:1px solid var(--line); border-radius:7px; padding:8px 10px; cursor:pointer; line-height:1.45}
+.q{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:14px 16px; display:flex; flex-direction:column; gap:10px; min-width:0}
+.q .stem{font-weight:500; line-height:1.5}
+.q .stem .n{font-size:12px; font-weight:600; color:var(--muted); margin-right:8px; font-variant-numeric:tabular-nums}
+.opts{display:flex; flex-direction:column; gap:5px}
+.opt{font:inherit; font-size:14.5px; text-align:left; display:grid; grid-template-columns:22px minmax(0,1fr); gap:8px; align-items:start; width:100%; background:transparent; color:var(--ink); border:1px solid var(--line); border-radius:7px; padding:7px 10px; cursor:pointer; line-height:1.45; transition:border-color .15s, background-color .15s}
 .opt:hover:not([disabled]){border-color:var(--accent); background:var(--accent-soft)}
-.opt .k{font-family:var(--font-mono); font-size:13px; color:var(--muted); padding-top:1px}
+.opt .k{font-size:13px; font-weight:600; color:var(--muted)}
 .opt[disabled]{cursor:default}
 .opt.right{border-color:var(--good); background:var(--good-soft)}
 .opt.right .k{color:var(--good)}
@@ -151,7 +181,7 @@ footer{font-size:13px; color:var(--muted); border-top:1px solid var(--line); pad
 /* study toolkit */
 .steps{list-style:none; padding:0; counter-reset:s; display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:12px}
 .steps li{counter-increment:s; background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:12px 14px; display:flex; flex-direction:column; gap:4px; font-size:14px; min-width:0}
-.steps li::before{content:"Step " counter(s); font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent)}
+.steps li::before{content:"Step " counter(s); font-size:12px; font-weight:600; color:var(--accent)}
 .steps b{font-size:15px}
 figure{margin:0; display:flex; flex-direction:column; gap:8px}
 .diagram{overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:14px}
@@ -186,7 +216,7 @@ svg .f-bad{fill:var(--bad)}
 .matrix th:first-child, .matrix td:first-child{text-align:left; white-space:normal}
 .matrix .on{color:var(--accent); font-size:15px}
 .matrix .sm{color:var(--muted)}
-.tag{font-family:var(--font-mono); font-size:12px; color:var(--muted); white-space:nowrap}
+.tag{font-size:12px; font-weight:500; color:var(--muted); white-space:nowrap; font-variant-numeric:tabular-nums}
 .drill{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:16px; display:flex; flex-direction:column; gap:14px; max-width:80ch}
 .drill .q{border:none; padding:0}
 .chips{display:flex; flex-wrap:wrap; gap:8px}
@@ -195,7 +225,7 @@ svg .f-bad{fill:var(--bad)}
 .chip.b1{border-color:var(--bad); color:var(--bad)}
 .chip.b2{border-color:var(--trap); color:var(--trap)}
 .chip.b3{border-color:var(--good); color:var(--good)}
-.btn{font:inherit; font-size:14px; font-weight:500; background:var(--accent); color:var(--bg); border:none; border-radius:6px; padding:8px 14px; cursor:pointer; align-self:flex-start}
+.btn{font:inherit; font-size:14px; font-weight:500; display:inline-flex; align-items:center; background:var(--accent); color:var(--bg); border:1px solid var(--accent); border-radius:6px; padding:8px 14px; cursor:pointer; align-self:flex-start; text-decoration:none; transition:filter .15s}
 .btn:hover{filter:brightness(1.08)}
 .row{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
 
@@ -223,7 +253,8 @@ svg .f-bad{fill:var(--bad)}
 .print-key{display:none}
 @media print{
   body{background:#fff; color:#000; -webkit-print-color-adjust:exact; print-color-adjust:exact; padding:0}
-  .rail, .quiz, .drill, #readiness, .btn, .btn-reset, .rev, #mock{display:none !important}
+  .rail, .quiz, .drill, #readiness, .btn, .btn-ghost, .actions, .btn-reset, .rev, #mock{display:none !important}
+  main > section > h2{border-bottom:none}
   .shell{display:block; max-width:none; padding:0}
   main{gap:28px}
   .diagram{overflow:visible} .diagram svg{min-width:0}
@@ -236,37 +267,61 @@ svg .f-bad{fill:var(--bad)}
 </style>
 
 <div class="shell">
-  <aside class="rail" aria-label="Study plan">
-    <div class="rail-title">Study plan</div>
-    <nav>
-      <ol>
-        <li><a href="#start"><span class="code">00</span>Start here</a></li>
-        <li><a href="#exam"><span class="code">Ex</span>The exam &amp; mock</a></li>
-        <li><a href="#cheatsheet"><span class="code">★</span>Cheat sheet</a></li>
-        <li><a href="#toolkit"><span class="code">◆</span>Study toolkit</a></li>
-        <li><a href="#m1" data-nav="m1"><span class="code">M1</span>MSO Foundations<span class="dot"></span></a></li>
-        <li><a href="#m2" data-nav="m2"><span class="code">M2</span>Prompting, Agents &amp; Tools<span class="dot"></span></a></li>
-        <li><a href="#m3" data-nav="m3"><span class="code">M3</span>Claude Code, MCP &amp; Integration<span class="dot"></span></a></li>
-        <li><a href="#m4" data-nav="m4"><span class="code">M4</span>Evals, Reliability &amp; Security<span class="dot"></span></a></li>
-        <li><a href="#m5" data-nav="m5"><span class="code">M5</span>Accelerators &amp; Platforms<span class="dot"></span></a></li>
-        <li><a href="#p1" data-nav="p1"><span class="code">P1</span>Building with the Claude API<span class="dot"></span></a></li>
-        <li><a href="#p2" data-nav="p2"><span class="code">P2</span>Introduction to MCP<span class="dot"></span></a></li>
-        <li><a href="#p3" data-nav="p3"><span class="code">P3</span>MCP: Advanced Topics<span class="dot"></span></a></li>
-        <li><a href="#labs"><span class="code">Lb</span>Hands-on labs</a></li>
-        <li><a href="#glossary"><span class="code">Gl</span>Glossary</a></li>
-      </ol>
-    </nav>
-    <div class="progress">
-      <div><strong id="revCount">0</strong> of <span id="revTotal">6</span> sections reviewed · <strong id="qCount">0</strong> questions right</div>
-      <div class="bar" aria-hidden="true"><span id="revBar"></span></div>
-    </div>
+  <aside class="rail" aria-label="Contents">
+    <details class="toc" id="toc" open>
+      <summary>
+        <span class="toc-label">Contents</span>
+        <span class="toc-current" id="tocCurrent">Start here</span>
+        <svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+      </summary>
+      <nav aria-label="Sections">
+        <p class="toc-group">Exam prep</p>
+        <ol>
+          <li><a href="#start"><span class="code"></span>Start here</a></li>
+          <li><a href="#exam"><span class="code"></span>The exam &amp; mock</a></li>
+          <li><a href="#cheatsheet"><span class="code"></span>Cheat sheet</a></li>
+          <li><a href="#toolkit"><span class="code"></span>Study toolkit</a></li>
+        </ol>
+        <p class="toc-group">Prep path</p>
+        <ol>
+          <li><a href="#m1" data-nav="m1"><span class="code">M1</span>MSO Foundations<span class="dot" title="Reviewed"></span></a></li>
+          <li><a href="#m2" data-nav="m2"><span class="code">M2</span>Prompting, Agents &amp; Tools<span class="dot" title="Reviewed"></span></a></li>
+          <li><a href="#m3" data-nav="m3"><span class="code">M3</span>Claude Code, MCP &amp; Integration<span class="dot" title="Reviewed"></span></a></li>
+          <li><a href="#m4" data-nav="m4"><span class="code">M4</span>Evals, Reliability &amp; Security<span class="dot" title="Reviewed"></span></a></li>
+          <li><a href="#m5" data-nav="m5"><span class="code">M5</span>Accelerators &amp; Platforms<span class="dot" title="Reviewed"></span></a></li>
+        </ol>
+        <p class="toc-group">Supporting courses</p>
+        <ol>
+          <li><a href="#p1" data-nav="p1"><span class="code">P1</span>Building with the Claude API<span class="dot" title="Reviewed"></span></a></li>
+          <li><a href="#p2" data-nav="p2"><span class="code">P2</span>Introduction to MCP<span class="dot" title="Reviewed"></span></a></li>
+          <li><a href="#p3" data-nav="p3"><span class="code">P3</span>MCP: Advanced Topics<span class="dot" title="Reviewed"></span></a></li>
+        </ol>
+        <p class="toc-group">Practice &amp; reference</p>
+        <ol>
+          <li><a href="#labs"><span class="code"></span>Hands-on labs</a></li>
+          <li><a href="#glossary"><span class="code"></span>Glossary</a></li>
+        </ol>
+      </nav>
+      <div class="progress">
+        <div><strong id="revCount">0</strong> of <span id="revTotal">8</span> sections reviewed · <strong id="qCount">0</strong> questions right</div>
+        <div class="bar" aria-hidden="true"><span id="revBar"></span></div>
+      </div>
+    </details>
   </aside>
 
   <main>
     <section id="start">
-      <div class="eyebrow">Claude Certified Developer · Foundations</div>
       <h1>Developer Foundations Study Guide</h1>
-      <p class="lede">A condensed review of the five courses in the Foundations prep path: the concepts, the decision rules, the production traps each module warns about, and practice questions built from its checkpoints.</p>
+      <p class="lede">Preparation for the Claude Certified Developer – Foundations exam: the five prep-path courses condensed into concepts, decision rules and production traps, with practice questions, a timed mock exam and hands-on labs.</p>
+      <div class="actions">
+        <a class="btn" href="#mock">Take the timed mock</a>
+        <a class="btn-ghost" href="#drill">Run a drill round</a>
+        <a class="btn-ghost" href="#cheatsheet">Cheat sheet</a>
+        <a class="btn-ghost" href="https://eldormitoriolibros-glitch.github.io/developer-foundations-study-guide/Developer-Foundations-Study-Guide.pdf">PDF version</a>
+      </div>
+      <div class="meta">
+        <span>Exam <b>CCDV-F</b>: <b>53</b> items in <b>120</b> min, pass at <b>720</b> of 1,000</span>
+      </div>
       <div class="meta">
         <span><b>5</b> modules</span>
         <span><b>774</b> minutes of course time</span>
@@ -292,20 +347,20 @@ svg .f-bad{fill:var(--bad)}
       </div>
 
       <h3>Five ideas every module repeats</h3>
-      <ol class="themes">
+      <ul class="themes">
         <li><div><b>Diagnose before you add.</b> Each failure points to one missing structural piece: an output constraint, a tool-description exclusion, a pruning step, a deny rule. Rewording and adding length rarely fix anything.</div></li>
         <li><div><b>Development hides production failures.</b> Fixtures are 3–5× smaller than real tool output, sessions are short, traffic never hits a rate limit, and the only content the agent reads is content you wrote. Measure against the largest real input before shipping.</div></li>
         <li><div><b>Enforce with structure, not with prose.</b> Schemas over "please return JSON", hooks over CLAUDE.md lines, deny rules and least privilege over trusting the prompt. A prompt instruction is never a security control.</div></li>
         <li><div><b>The eval is the gate.</b> Model upgrades and downgrades, prompt changes, and version promotion all move on a measured score against a pinned baseline, changing one thing at a time.</div></li>
         <li><div><b>Ask the worst-case question.</b> "What is the worst outcome if this runs without a human check?" decides permission modes, HITL checkpoints, and where a seam needs a control.</div></li>
-      </ol>
+      </ul>
       <p class="note">Product details (model names, beta headers, limits, prices) are time-sensitive. The course itself says to confirm them against platform.claude.com and code.claude.com when you build.</p>
     </section>
 
     <!-- ===================== EXAM ===================== -->
     <section id="exam">
-      <div class="eyebrow">Exam CCDV-F · from the official exam guide v1.0 and the certification FAQ</div>
       <h2>The exam</h2>
+      <p class="src">From the official exam guide (v1.0, exam code CCDV-F) and the certification FAQ.</p>
       <p class="prose">The exam guide calls its blueprint the authoritative scope of the exam. Its weights don't follow the prep path's structure, so use them to decide where your study hours go.</p>
 
       <div class="tablewrap"><table>
@@ -416,7 +471,6 @@ svg .f-bad{fill:var(--bad)}
     </section>
 
     <section id="cheatsheet">
-      <div class="eyebrow">High-yield facts</div>
       <h2>Cheat sheet</h2>
       <div class="cheat">
         <div>
@@ -548,7 +602,6 @@ svg .f-bad{fill:var(--bad)}
 
     <!-- ===================== TOOLKIT ===================== -->
     <section id="toolkit">
-      <div class="eyebrow">A second way through the material</div>
       <h2>Study toolkit</h2>
       <p class="prose">The module sections present the content in course order. This part reorganizes it for review: a study method, tables that line up the same idea across courses, diagrams of the mechanisms that are hard to follow in prose, and a drill that mixes questions from every section.</p>
 
@@ -698,9 +751,9 @@ svg .f-bad{fill:var(--bad)}
             <text x="460" y="124" text-anchor="middle" class="tc">block_stop</text>
             <text x="560" y="124" text-anchor="middle" class="tc">message_delta</text>
             <text x="660" y="124" text-anchor="middle" class="tc">message_stop</text>
-            <text x="460" y="148" text-anchor="middle" class="t t-good">✓ parse tool input</text>
+            <text x="460" y="148" text-anchor="middle" class="t t-good">parse tool input</text>
             <text x="560" y="166" text-anchor="middle" class="tm">stop_reason</text>
-            <text x="660" y="148" text-anchor="middle" class="t t-good">✓ append to history</text>
+            <text x="660" y="148" text-anchor="middle" class="t t-good">append to history</text>
             <text x="40" y="198" class="tb">Interrupted stream</text>
             <line x1="40" y1="222" x2="392" y2="222" class="ln-m"/>
             <circle cx="70" cy="222" r="5" class="f"/><circle cx="170" cy="222" r="5" class="f"/><circle cx="255" cy="222" r="5" class="f"/><circle cx="315" cy="222" r="5" class="f"/>
@@ -842,7 +895,7 @@ svg .f-bad{fill:var(--bad)}
     <!-- ===================== M1 ===================== -->
     <section id="m1">
       <div class="mod-head">
-        <div><div class="kicker">Module 1 · 57 min</div><h2>MSO Foundations</h2></div>
+        <div><h2>MSO Foundations</h2><p class="mod-meta">Module 1 · 57 min</p></div>
         <label class="rev"><input type="checkbox" id="rev-m1" data-rev="m1"> Mark reviewed</label>
       </div>
       <p class="prose">The vocabulary the rest of the path assumes: what you are paying for, why the same prompt answers differently, which levers are independent, and how requests reach the model.</p>
@@ -890,7 +943,7 @@ svg .f-bad{fill:var(--bad)}
     <!-- ===================== M2 ===================== -->
     <section id="m2">
       <div class="mod-head">
-        <div><div class="kicker">Module 2 · 209 min</div><h2>Production-Grade Prompting, Agents &amp; Tool Use</h2></div>
+        <div><h2>Production-Grade Prompting, Agents &amp; Tool Use</h2><p class="mod-meta">Module 2 · 209 min</p></div>
         <label class="rev"><input type="checkbox" id="rev-m2" data-rev="m2"> Mark reviewed</label>
       </div>
       <p class="prose">This is the largest module. Every topic is framed as a failure that testing misses and production exposes, paired with the implementation decision that prevents it.</p>
@@ -1061,7 +1114,7 @@ result = execute_tool(block.name, block.input)</code></pre>
     <!-- ===================== M3 ===================== -->
     <section id="m3">
       <div class="mod-head">
-        <div><div class="kicker">Module 3 · 142 min</div><h2>Claude Code, MCP &amp; Integration</h2></div>
+        <div><h2>Claude Code, MCP &amp; Integration</h2><p class="mod-meta">Module 3 · 142 min</p></div>
         <label class="rev"><input type="checkbox" id="rev-m3" data-rev="m3"> Mark reviewed</label>
       </div>
       <p class="prose">Making a working integration configurable, shareable and safe once it leaves your machine. Every convenience that works locally (a lenient mode, a growing CLAUDE.md, an absolute path, an inline key, staging-only OAuth) breaks somewhere else.</p>
@@ -1161,7 +1214,7 @@ result = execute_tool(block.name, block.input)</code></pre>
     <!-- ===================== M4 ===================== -->
     <section id="m4">
       <div class="mod-head">
-        <div><div class="kicker">Module 4 · 211 min</div><h2>Production Engineering, Evals &amp; Security</h2></div>
+        <div><h2>Production Engineering, Evals &amp; Security</h2><p class="mod-meta">Module 4 · 211 min</p></div>
         <label class="rev"><input type="checkbox" id="rev-m4" data-rev="m4"> Mark reviewed</label>
       </div>
       <p class="prose">Proving that a working agent keeps working under real traffic. Each production failure here traces back to a decision nobody wrote down.</p>
@@ -1261,7 +1314,7 @@ result = execute_tool(block.name, block.input)</code></pre>
     <!-- ===================== M5 ===================== -->
     <section id="m5">
       <div class="mod-head">
-        <div><div class="kicker">Module 5 · 155 min</div><h2>Accelerators &amp; IP Contribution</h2></div>
+        <div><h2>Accelerators &amp; IP Contribution</h2><p class="mod-meta">Module 5 · 155 min</p></div>
         <label class="rev"><input type="checkbox" id="rev-m5" data-rev="m5"> Mark reviewed</label>
       </div>
       <p class="prose">This module starts where your code starts working: making it reusable, acceptable to a maintainer, safely versioned, defensible on a platform, and bounded when its components connect.</p>
@@ -1335,7 +1388,7 @@ assert eval_suite.run(model="us.anthropic.claude-opus-4-8") >= baseline_score</c
     <!-- ===================== P1 ===================== -->
     <section id="p1">
       <div class="mod-head">
-        <div><div class="kicker">Supporting course · about 8 hours · 85 lessons</div><h2>Building with the Claude API</h2></div>
+        <div><h2>Building with the Claude API</h2><p class="mod-meta">Supporting course · about 8 hours · 85 lessons</p></div>
         <label class="rev"><input type="checkbox" id="rev-p1" data-rev="p1"> Mark reviewed</label>
       </div>
       <p class="prose">The hands-on course the Foundations path builds on. You work in Python notebooks, from a first request through evals, prompt techniques, tools, RAG, platform features and MCP, and finish with workflow and agent patterns. It is older than the path, so read the next table before you memorize any API details.</p>
@@ -1480,7 +1533,7 @@ assert eval_suite.run(model="us.anthropic.claude-opus-4-8") >= baseline_score</c
     <!-- ===================== P2 ===================== -->
     <section id="p2">
       <div class="mod-head">
-        <div><div class="kicker">Supporting course · about 1 hour · 13 lessons</div><h2>Introduction to Model Context Protocol</h2></div>
+        <div><h2>Introduction to Model Context Protocol</h2><p class="mod-meta">Supporting course · about 1 hour · 13 lessons</p></div>
         <label class="rev"><input type="checkbox" id="rev-p2" data-rev="p2"> Mark reviewed</label>
       </div>
       <p class="prose">This course is the MCP chapter of <a href="#p1">Building with the Claude API</a> published on its own: the same CLI document chatbot, built with both an MCP server and a client. If you've studied that chapter, the only new material is the closing review of the three server primitives below. Its final assessment loads interactively, so it isn't reproduced here.</p>
@@ -1512,7 +1565,7 @@ assert eval_suite.run(model="us.anthropic.claude-opus-4-8") >= baseline_score</c
     <!-- ===================== P3 ===================== -->
     <section id="p3">
       <div class="mod-head">
-        <div><div class="kicker">Supporting course · about 1.1 hours · 15 lessons</div><h2>Model Context Protocol: Advanced Topics</h2></div>
+        <div><h2>Model Context Protocol: Advanced Topics</h2><p class="mod-meta">Supporting course · about 1.1 hours · 15 lessons</p></div>
         <label class="rev"><input type="checkbox" id="rev-p3" data-rev="p3"> Mark reviewed</label>
       </div>
       <p class="prose">This course covers the parts of MCP where the <em>server</em> reaches back to the client (sampling, notifications, roots), the JSON messages underneath, and why moving from stdio to Streamable HTTP can silently switch those features off. The walkthrough videos and the assessment have no written content, so they aren't summarized here.</p>
@@ -1573,7 +1626,6 @@ assert eval_suite.run(model="us.anthropic.claude-opus-4-8") >= baseline_score</c
 
     <!-- ===================== LABS ===================== -->
     <section id="labs">
-      <div class="eyebrow">Build it once, remember it for the exam</div>
       <h2>Hands-on labs</h2>
       <p class="prose">The exam guide recommends building at least one Claude application that uses the API, one or more tools, some prompt and context engineering, and basic security and evals. These seven labs cover that, each in about an hour, in Python or TypeScript. Each gives the goal, the steps, and a "done when" check. There are no full solutions: hitting the traps yourself is how they stick.</p>
       <div class="labs">
@@ -1655,7 +1707,6 @@ assert eval_suite.run(model="us.anthropic.claude-opus-4-8") >= baseline_score</c
     </section>
 
     <section id="glossary">
-      <div class="eyebrow">Terms</div>
       <h2>Glossary</h2>
       <dl class="gloss">
         <div><dt>Accelerator</dt><dd>A build packaged so the next engagement configures it: parameters, documented assumptions, a bundled eval.</dd></div>
@@ -2109,6 +2160,36 @@ document.querySelectorAll("[data-rev]").forEach(cb=>{
 });
 document.getElementById("totalQ").textContent = Object.values(QUIZ).reduce((n,a)=>n+a.length,0);
 totals();
+
+/* Contents: open on desktop, a collapsible bar on phones; highlight the section in view */
+(function(){
+  const toc = document.getElementById("toc"), cur = document.getElementById("tocCurrent");
+  const links = [...document.querySelectorAll('.rail nav a[href^="#"]')];
+  const wide = window.matchMedia("(min-width: 901px)");
+  const sync = ()=>{ toc.open = wide.matches; };
+  sync(); wide.addEventListener ? wide.addEventListener("change", sync) : wide.addListener(sync);
+  links.forEach(a=>a.addEventListener("click", ()=>{ if (!wide.matches) toc.open = false; }));
+  const byId = {}; links.forEach(a=>byId[a.getAttribute("href").slice(1)] = a);
+  const sections = [...document.querySelectorAll("main > section[id]")].filter(s=>byId[s.id]);
+  function mark(id){
+    links.forEach(a=>a.removeAttribute("aria-current"));
+    const a = byId[id]; if (!a) return;
+    a.setAttribute("aria-current","true");
+    cur.textContent = a.textContent.replace(/^(M\d|P\d)/, "$1 · ").trim();
+    if (wide.matches){ const r=a.getBoundingClientRect(), box=document.querySelector(".rail").getBoundingClientRect(); if (r.top < box.top || r.bottom > box.bottom) a.scrollIntoView({block:"nearest"}); }
+  }
+  if ("IntersectionObserver" in window){
+    const seen = new Map();
+    const io = new IntersectionObserver(es=>{
+      es.forEach(e=>seen.set(e.target.id, e.isIntersecting ? e.boundingClientRect.top : null));
+      const visible = sections.filter(s=>seen.get(s.id) != null);
+      const pick = visible.length ? visible[0] : null;
+      if (pick) mark(pick.id);
+    }, {rootMargin:"-20% 0px -70% 0px"});
+    sections.forEach(s=>io.observe(s));
+  }
+  mark(sections[0] && sections[0].id);
+})();
 </script>
 
 </body>
